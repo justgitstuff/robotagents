@@ -10,7 +10,7 @@ public class PaintingTest
 {
 	public static void main(String[] args) 
 	{
-		ActionFrame frame = new ActionFrame(300, 300);
+		ActionFrame frame = new ActionFrame(400, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.show();
 		
@@ -18,6 +18,7 @@ public class PaintingTest
 		newObjects.add(new EnvObject(1,50,50));
 		newObjects.add(new EnvObject(2,100,100));
 		newObjects.add(new EnvObject(3,50,200));
+		newObjects.add(new EnvObject(7,400,400));
 		
 		ArrayList<EnvObject> newAgents = new ArrayList<EnvObject>();
 		newAgents.add(new EnvObject(4,250,250));
@@ -34,6 +35,6 @@ public class PaintingTest
 		}
 		
 		frame.upgrade(newObjects, newAgents);
-		frame.rePaint();
+		frame.repaint();
 	}
 }
