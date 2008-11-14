@@ -2,7 +2,11 @@ package environment;
 
 import java.util.ArrayList;
 
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import utils.EnvObject;
 
@@ -38,3 +42,4 @@ public class PaintingTest
 		frame.repaint();
 	}
 }
+
