@@ -3,6 +3,8 @@ package environment;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JFrame;
+
 import utils.*;
 import ontologies.*;
 import jade.content.*;
@@ -28,6 +30,8 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
    protected MessageTemplate mt = MessageTemplate.and(MessageTemplate
          .MatchLanguage(codec.getName()), MessageTemplate
          .MatchOntology(ontology.getName()));
+
+   protected ActionFrame controlPanel;
 
    protected class SendBehav extends OneShotBehaviour
    {
@@ -92,6 +96,8 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
       }
    }
 
+
+
    protected class EnvUpdateBehav extends CyclicBehaviour
    {
       public void action()
@@ -113,8 +119,21 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
                         robots.remove(i);
                   robots.add((EnvObject) fact);
 
+                  controlPanel.upgrade(objects, robots);
+                  controlPanel.repaint();
+
                   addBehaviour(new SendBehav(msg.getSender(), fact.getId(),
                         fact.getPosX(), fact.getPosY()));
+
+
+                  System.out.println("OBJECTS:");
+                  for(EnvObject ob : objects)
+                     System.out.println(ob.getId() + " " + ob.getPosX() + " " + ob.getPosY());
+
+                  System.out.println("ROBOTS:");
+
+                  for(EnvObject ob : robots)
+                     System.out.println(ob.getId() + " " + ob.getPosX() + " " + ob.getPosY());
 
                }
                catch (Exception ex)
@@ -153,6 +172,10 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
       {
          fe.printStackTrace();
       }
+
+      controlPanel = new ActionFrame(500, 500, robots, objects);
+      controlPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      controlPanel.show();
 
       addBehaviour(new EnvUpdateBehav());
    }

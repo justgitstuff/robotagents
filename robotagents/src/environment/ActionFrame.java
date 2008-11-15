@@ -20,7 +20,7 @@ import utils.EnvObject;
 
 /**
  * Class containing all GUI Elements
- * 
+ *
  * @author Maciek
  */
 public class ActionFrame extends JFrame
@@ -32,13 +32,14 @@ public class ActionFrame extends JFrame
 
    /**
     * Preparing Frame with environment to shown
-    * 
+    *
     * @param width
     *           environment width
     * @param height
     *           environment height
     */
-   public ActionFrame(int width, int height)
+   public ActionFrame(int width, int height, ArrayList<EnvObject> robs,
+         ArrayList<EnvObject> objs)
    {
       // Preparing frame for showing environment
       setTitle("Agents Environment");
@@ -46,7 +47,7 @@ public class ActionFrame extends JFrame
       setResizable(false);
 
       // Adding panel with agents and objects positions
-      panel = new EnvPanel(); // panel which shows environment
+      panel = new EnvPanel(objs, robs); // panel which shows environment
       panel.setBorder(BorderFactory.createEtchedBorder());
 
       JPanel pane = new JPanel(); // panel, which sets environment not resize
@@ -100,7 +101,7 @@ public class ActionFrame extends JFrame
             Integer id = idField.pobierzWartosc();
             Integer x = xField.pobierzWartosc();
             Integer y = yField.pobierzWartosc();
-            
+
             if (id != null && x != null && y != null)
             {
                EnvObject newObj = new EnvObject(id, x, y);
@@ -131,7 +132,7 @@ public class ActionFrame extends JFrame
 
    /**
     * Upgrades data which will be shown in environment
-    * 
+    *
     * @param newObjects
     *           new objects list
     * @param newAgents
@@ -151,7 +152,7 @@ public class ActionFrame extends JFrame
    // *********************************************************************
    /**
     * Class containing graphic representation of environment.
-    * 
+    *
     * @author Maciek
     */
    class EnvPanel extends JPanel
@@ -179,7 +180,7 @@ public class ActionFrame extends JFrame
 
       /**
        * Creates panel with given objects and agents lists
-       * 
+       *
        * @param newObjects
        *           objects list
        * @param newAgents
@@ -254,7 +255,7 @@ public class ActionFrame extends JFrame
 
       /**
        * Upgrades data which will be shown in panel
-       * 
+       *
        * @param newObjects
        *           new objects list
        * @param newAgents
