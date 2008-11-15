@@ -3,5 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JADE"/>
+	<classpathentry kind="lib" path="/home/chudi/workspace/JADE-bin-3.6/jade/lib/http.jar"/>
+	<classpathentry kind="lib" path="/home/chudi/workspace/JADE-bin-3.6/jade/lib/iiop.jar"/>
+	<classpathentry kind="lib" path="/home/chudi/workspace/JADE-bin-3.6/jade/lib/jade.jar"/>
+	<classpathentry kind="lib" path="/home/chudi/workspace/JADE-bin-3.6/jade/lib/jadeTools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
