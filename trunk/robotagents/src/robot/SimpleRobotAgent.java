@@ -256,9 +256,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       if (args != null && args.length > 0)
       {
          id = Integer.parseInt((String) args[0]);
+         xPos =Integer.parseInt((String) args[1]);
+         yPos = Integer.parseInt((String) args[2]);
       }
-      xPos = 0;
-      yPos = 0;
+
 
       tasks = new ArrayList<Task>();
       facts = new ArrayList<Fact>();
