@@ -125,7 +125,7 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
                   addBehaviour(new SendBehav(msg.getSender(), fact.getId(),
                         fact.getPosX(), fact.getPosY()));
 
-
+                  /*
                   System.out.println("OBJECTS:");
                   for(EnvObject ob : objects)
                      System.out.println(ob.getId() + " " + ob.getPosX() + " " + ob.getPosY());
@@ -134,7 +134,7 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
 
                   for(EnvObject ob : robots)
                      System.out.println(ob.getId() + " " + ob.getPosX() + " " + ob.getPosY());
-
+                  */
                }
                catch (Exception ex)
                {

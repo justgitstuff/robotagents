@@ -23,6 +23,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
    protected int xPos;
    protected int yPos;
    protected int id;
+   protected boolean inMove;
 
    protected ArrayList<Task> tasks;
    protected ArrayList<Fact> facts;
@@ -134,6 +135,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                   Fact fact = info.getF();
 
                   facts.add(fact);
+                  if (facts.size() > 100) facts.remove(0); 
 
                }
                catch (Exception ex)
@@ -142,9 +144,15 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                }
             }
          }
+         else if(!inMove)
+         {
+            double x = (Math.random()*500);
+            double y = (Math.random()*500);
+            addBehaviour(new MoveBehav((int)x,(int)y));
+         }
          else
          {
-            block();
+            //block();
          }
       }
    }
@@ -232,21 +240,60 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
             send(message);
 
-         } // else
-         // System.out
-         // .println("nie wiadomo dlaczego, wyglada na to ze juz to
-         // przekazywalem");
+         }
       }
    }
 
    /*
     * protected class ContractInitBehav extends ContractNetInitiator { }
-    *
+    * 
     * protected class ContractRespBehav extends ContractNetResponder { }
     */
 
-   protected void move(int x, int y)
+   protected class MoveBehav extends OneShotBehaviour
    {
+      protected int xBeg, xDest, yBeg, yDest;
+      protected double x, y, distance;
+
+      public MoveBehav(int xd, int yd)
+      {
+         xBeg = xPos;
+         yBeg = yPos;
+         xDest = xd;
+         yDest = yd;
+         distance = Math.sqrt((xBeg - xDest) * (xBeg - xDest) + (yBeg - yDest)
+               * (yBeg - yDest)) / 10;
+         inMove = true;
+      }
+      
+      public void action()
+      {
+         System.out.println("Started moving to " + xDest + " " + yDest);
+         x = xBeg;
+         y = yBeg;
+         TickerBehaviour loop = new TickerBehaviour(myAgent, 100)
+         {
+           public void onTick()
+           {
+              if(Math.abs(xPos - xDest) < 10 && Math.abs(yPos - yDest) < 10)
+              {
+                 System.out.println("Ended moving on " + xPos + " " + yPos);
+                 inMove = false;
+                 stop();
+              }
+              else
+              {
+                 x += (xDest - xBeg)/distance;
+                 y += (yDest - yBeg)/distance;
+                 xPos = (int)x;
+                 yPos = (int)y;
+                 addBehaviour(new EnvRequestBehav());
+              }
+           }
+           
+         };
+         addBehaviour(loop);
+      }
 
    }
 
@@ -256,15 +303,14 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       if (args != null && args.length > 0)
       {
          id = Integer.parseInt((String) args[0]);
-         xPos =Integer.parseInt((String) args[1]);
+         xPos = Integer.parseInt((String) args[1]);
          yPos = Integer.parseInt((String) args[2]);
       }
-
 
       tasks = new ArrayList<Task>();
       facts = new ArrayList<Fact>();
       conversations = new ArrayList<String>();
-
+      inMove = false;
       getContentManager().registerLanguage(codec);
       getContentManager().registerOntology(ontology);
 
