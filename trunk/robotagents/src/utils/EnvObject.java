@@ -5,14 +5,19 @@ import jade.content.Predicate;
 
 public class EnvObject implements Concept
 {
-	protected int id, posX, posY;
+   protected int id, posX, posY;
 
-	public EnvObject(int i, int x, int y)
-	{
-		id = i;
-		posX = x;
-		posY = y;
-	}
+   public EnvObject()
+   {
+      super();
+   }
+
+	public EnvObject(int id, int posX, int posY)
+   {
+      this.id = id;
+      this.posX = posX;
+      this.posY = posY;
+   }
 
 	public void setId(int id) {
 		this.id = id;

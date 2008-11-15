@@ -13,6 +13,8 @@ import jade.content.onto.basic.*;
 import jade.lang.acl.*;
 
 import java.util.ArrayList;
+import java.util.Date;
+
 import utils.*;
 import ontologies.*;
 
@@ -20,7 +22,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 {
    protected int xPos;
    protected int yPos;
-   protected int id = 0;
+   protected int id;
 
    protected ArrayList<Task> tasks;
    protected ArrayList<Fact> facts;
@@ -54,6 +56,63 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          System.out.println(" - " + i + " " + this.conversations.get(i));
    }
 
+   protected class EnvRequestBehav extends OneShotBehaviour
+   {
+      public void action()
+      {
+         DFAgentDescription dfd = new DFAgentDescription();
+         ServiceDescription sd = new ServiceDescription();
+         sd.setType("ENVIRONMENT");
+         dfd.addServices(sd);
+
+         ArrayList<AID> aids = new ArrayList<AID>();
+
+         try
+         {
+            DFAgentDescription[] result = DFService.search(myAgent, dfd);
+            if (result.length > 0)
+               for (int i = 0; i < result.length; i++)
+               {
+                  MessageInfo m = new MessageInfo(id, 0, xPos, yPos,
+                        (float) 1000.0);
+                  m.setF(new Fact(id, xPos, yPos, new Date()));
+                  /*
+                   * MessageInfo m = new MessageInfo(); m.setMainSenderId(id);
+                   * m.setMainReceiverId(0); m.setSenderPosX(xPos);
+                   * m.setSenderPosY(yPos); m.setSenderRange((float) 1000.0);
+                   * Fact tempFact = new Fact(); tempFact.setId(id);
+                   * tempFact.setPosX(xPos); tempFact.setPosY(yPos);
+                   * tempFact.setTime(new Date()); m.setF(tempFact);
+                   */
+
+                  ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+                  msg.addReceiver(result[i].getName());
+                  msg.setLanguage(codec.getName());
+                  msg.setOntology(ontology.getName());
+                  msg.setConversationId("forYourEyesOnly");
+                  try
+                  {
+                     getContentManager().fillContent(msg, m);
+                     send(msg);
+                  }
+                  catch (CodecException ce)
+                  {
+                     ce.printStackTrace();
+                  }
+                  catch (OntologyException oe)
+                  {
+                     oe.printStackTrace();
+                  }
+               }
+
+         }
+         catch (FIPAException e)
+         {
+            e.printStackTrace();
+         }
+      }
+   }
+
    protected class SimpleBehav extends CyclicBehaviour
    {
       public void action()
@@ -63,9 +122,24 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             if (msg.getPerformative() == ACLMessage.PROPAGATE)
             {
-               // System.out
-               // .println("__________________________________________");
                addBehaviour(new PropBehav(msg));
+            }
+            else if (msg.getPerformative() == ACLMessage.INFORM)
+            {
+               try
+               {
+                  ContentElement content = getContentManager().extractContent(
+                        msg);
+                  MessageInfo info = (MessageInfo) content;
+                  Fact fact = info.getF();
+
+                  facts.add(fact);
+
+               }
+               catch (Exception ex)
+               {
+                  ex.printStackTrace();
+               }
             }
          }
          else
@@ -183,6 +257,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       {
          id = Integer.parseInt((String) args[0]);
       }
+      xPos = 0;
+      yPos = 0;
 
       tasks = new ArrayList<Task>();
       facts = new ArrayList<Fact>();
@@ -212,6 +288,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          fe.printStackTrace();
       }
 
+      addBehaviour(new EnvRequestBehav());
       addBehaviour(new SimpleBehav());
    }
 

@@ -6,6 +6,11 @@ public class CheckLocationTask extends Task implements AgentAction
 {
 	protected int posX, posY;
 
+	public CheckLocationTask()
+	{
+	   super();
+	}
+
 	public CheckLocationTask(int empid, int pr, int x, int y)
 	{
 		super(empid, pr);
