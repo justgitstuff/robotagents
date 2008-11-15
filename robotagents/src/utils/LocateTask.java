@@ -6,6 +6,11 @@ public class LocateTask extends Task implements AgentAction
 {
 	protected int objectId;
 
+	public LocateTask()
+	{
+	   super();
+	}
+
 	public LocateTask(int empid, int pr, int id)
 	{
 		super(empid, pr);

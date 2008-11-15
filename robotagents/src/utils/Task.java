@@ -6,6 +6,11 @@ public class Task implements AgentAction
 {
    protected int employerId, priority;
 
+   public Task()
+   {
+      super();
+   }
+
    public Task(int empid, int pr)
    {
       priority = pr;

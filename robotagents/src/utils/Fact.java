@@ -4,13 +4,18 @@ import java.util.Date;
 
 public class Fact extends EnvObject
 {
-	protected Date time;
+	public Fact()
+   {
+      super();
+   }
 
-	public Fact(int i, int x, int y, Date t)
-	{
-		super(i, x, y);
-		time = t;
-	}
+   public Fact(int id, int posX, int posY, Date time)
+   {
+      super(id, posX, posY);
+      this.time = time;
+   }
+
+   protected Date time;
 
 	public Date getTime()
 	{

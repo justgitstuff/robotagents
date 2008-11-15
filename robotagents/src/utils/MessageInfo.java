@@ -13,6 +13,11 @@ public class MessageInfo implements Predicate
    protected LocateTask lt = null;
    protected CheckLocationTask clt = null;
 
+   public MessageInfo()
+   {
+      super();
+   }
+
    public MessageInfo(int mainSenderId, int mainReceiverId, int senderPosX,
          int senderPosY, float senderRange)
    {
@@ -102,4 +107,5 @@ public class MessageInfo implements Predicate
    {
       this.clt = clt;
    }
+
 }
