@@ -13,18 +13,18 @@ import jade.content.lang.Codec.*;
 import jade.content.lang.sl.*;
 import jade.content.onto.*;
 import jade.content.onto.basic.*;
+import jade.content.lang.leap.LEAPCodec;
 import jade.core.*;
 import jade.core.behaviours.*;
 import jade.domain.*;
 import jade.domain.FIPAAgentManagement.*;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.*;
 
 public class EnvironmentAgent extends Agent implements RobotsVocabulary
 {
    protected ArrayList<EnvObject> objects = new ArrayList<EnvObject>();
    protected ArrayList<EnvObject> robots = new ArrayList<EnvObject>();
-   protected Codec codec = new SLCodec();
+   protected Codec codec = new LEAPCodec();
    protected Ontology ontology = RobotsOntology.getInstance();
    protected int sightRange = 10;
    protected MessageTemplate mt = MessageTemplate.and(MessageTemplate
@@ -65,13 +65,6 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
          {
             EnvObject tmp = neighborhood.get(i);
             MessageInfo m = new MessageInfo(0, recid, 0, 0, (float) 1000.0);
-            /*
-             * m.setMainSenderId(0); m.setMainReceiverId(recid);
-             * m.setSenderPosX(0); m.setSenderPosY(0); m.setSenderRange((float)
-             * 1000.0); Fact tempFact = new Fact(); tempFact.setId(tmp.getId());
-             * tempFact.setPosX(tmp.getPosX()); tempFact.setPosY(tmp.getPosY());
-             * tempFact.setTime(new Date());
-             */
             m.setF(new Fact(tmp.getId(), tmp.getPosX(), tmp.getPosY(),
                   new Date()));
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);

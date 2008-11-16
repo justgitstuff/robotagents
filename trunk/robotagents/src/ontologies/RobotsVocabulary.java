@@ -8,6 +8,7 @@ public interface RobotsVocabulary
    public static final String MESSAGE_INFO_SENDER_POS_X = "senderPosX";
    public static final String MESSAGE_INFO_SENDER_POS_Y = "senderPosY";
    public static final String MESSAGE_INFO_SENDER_RANGE = "senderRange";
+   public static final String MESSAGE_INFO_DEADLINE = "deadline";
    public static final String MESSAGE_INFO_FACT = "f";
    public static final String MESSAGE_INFO_LOCATE_TASK = "lt";
    public static final String MESSAGE_INFO_CHECK_LOCATION_TASK = "clt";

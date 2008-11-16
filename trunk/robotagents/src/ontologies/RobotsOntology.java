@@ -38,7 +38,7 @@ public class RobotsOntology extends Ontology implements RobotsVocabulary
          fact.add(FACT_TIME, (PrimitiveSchema) getSchema(BasicOntology.DATE),
                ObjectSchema.MANDATORY);
 
-         AgentActionSchema as = new AgentActionSchema(TASK);
+         ConceptSchema as = new ConceptSchema(TASK);
          add(as, Task.class);
          as.add(TASK_EMPLOYER_ID,
                (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
@@ -47,14 +47,14 @@ public class RobotsOntology extends Ontology implements RobotsVocabulary
                (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
                ObjectSchema.MANDATORY);
 
-         AgentActionSchema las = new AgentActionSchema(LOCATE_TASK);
+         ConceptSchema las = new ConceptSchema(LOCATE_TASK);
          add(las, LocateTask.class);
          las.addSuperSchema(as);
          las.add(LOCATE_TASK_OBJECT_ID,
                (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
                ObjectSchema.MANDATORY);
 
-         AgentActionSchema clas = new AgentActionSchema(CHECK_LOCATION_TASK);
+         ConceptSchema clas = new ConceptSchema(CHECK_LOCATION_TASK);
          add(clas, CheckLocationTask.class);
          clas.addSuperSchema(as);
          clas.add(CHECK_LOCATION_TASK_POS_X,
@@ -81,13 +81,16 @@ public class RobotsOntology extends Ontology implements RobotsVocabulary
          mf.add(MESSAGE_INFO_SENDER_RANGE,
                (PrimitiveSchema) getSchema(BasicOntology.FLOAT),
                ObjectSchema.MANDATORY);
+         mf.add(MESSAGE_INFO_DEADLINE,
+               (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
+               ObjectSchema.OPTIONAL);
          mf.add(MESSAGE_INFO_FACT, (ConceptSchema) getSchema(FACT),
                ObjectSchema.OPTIONAL);
          mf.add(MESSAGE_INFO_LOCATE_TASK,
-               (AgentActionSchema) getSchema(LOCATE_TASK),
+               (ConceptSchema) getSchema(LOCATE_TASK),
                ObjectSchema.OPTIONAL);
          mf.add(MESSAGE_INFO_CHECK_LOCATION_TASK,
-               (AgentActionSchema) getSchema(CHECK_LOCATION_TASK),
+               (ConceptSchema) getSchema(CHECK_LOCATION_TASK),
                ObjectSchema.OPTIONAL);
       }
       catch (OntologyException oe)

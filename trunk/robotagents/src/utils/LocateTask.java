@@ -1,8 +1,6 @@
 package utils;
 
-import jade.content.AgentAction;
-
-public class LocateTask extends Task implements AgentAction
+public class LocateTask extends Task
 {
 	protected int objectId;
 
