@@ -241,7 +241,9 @@ public class ActionFrame extends JFrame
             Rectangle2D rect = new Rectangle2D.Double(centX - PWIDTH / 2, centY
                   - PHIGHT / 2, PWIDTH, PHIGHT); // preparing agent symbol
             Ellipse2D circle = new Ellipse2D.Double(centX - 10 * PWIDTH / 2,
-                  centY - 10 * PHIGHT / 2, 10 * PWIDTH, 10 * PHIGHT); // painting
+                  centY - 10 * PHIGHT / 2, 10 * PWIDTH, 10 * PHIGHT); 
+            Ellipse2D circle2 = new Ellipse2D.Double(centX - 50 * PWIDTH / 2,
+                  centY - 50 * PHIGHT / 2, 50 * PWIDTH, 50 * PHIGHT);// painting
             // signal
             // coverage
             g2.setPaint(Color.BLUE);
@@ -250,6 +252,8 @@ public class ActionFrame extends JFrame
             g2.draw(circle);
             g2.drawString(new Integer(object.getId()).toString(), centX + 5,
                   centY); // writing agent id
+            g2.setPaint(Color.GREEN);
+            g2.draw(circle2);
          }
       }
 
