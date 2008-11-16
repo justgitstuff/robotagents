@@ -16,11 +16,11 @@ import jade.proto.ContractNetInitiator;
 import jade.proto.ContractNetResponder;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Vector;
-
-import com.sun.corba.se.pept.transport.Acceptor;
 
 import utils.*;
 import ontologies.*;
@@ -32,9 +32,11 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
    protected int id;
    protected boolean inMove;
 
-   protected ArrayList<Task> tasks;
+   protected PriorityQueue<Task> tasks;
    protected ArrayList<Fact> facts;
    protected ArrayList<String> conversations;
+
+   protected RandomMoveBehav randomMove = new RandomMoveBehav();
 
    protected Codec codec = new LEAPCodec();
    protected Ontology ontology = RobotsOntology.getInstance();
@@ -126,8 +128,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       private int objectId;
       private int priority;
 
-      public GiveLocateTaskBehav(AID employeeAID, int employeeId,
-            int objectId, int priority)
+      public GiveLocateTaskBehav(AID employeeAID, int employeeId, int objectId,
+            int priority)
       {
          this.employeeAID = employeeAID;
          this.employeeId = employeeId;
@@ -158,8 +160,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             oe.printStackTrace();
          }
-         System.out.println(getName() + " gives task to "
-               + employeeAID.getName());
+         // System.out.println(getName() + " gives task to "
+         // + employeeAID.getName());
          addBehaviour(new RobotsContractNetInitiator(myAgent, msg,
                countDeadline(lt)));
       }
@@ -187,7 +189,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       {
          MessageInfo mi = new MessageInfo(id, employeeId, xPos, yPos,
                (float) 100.0);
-         CheckLocationTask clt = new CheckLocationTask(id, priority, xCoord, yCoord);
+         CheckLocationTask clt = new CheckLocationTask(id, priority, xCoord,
+               yCoord);
          mi.setClt(clt);
          ACLMessage msg = new ACLMessage(ACLMessage.CFP);
          msg.addReceiver(employeeAID);
@@ -206,8 +209,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             oe.printStackTrace();
          }
-         System.out.println(getName() + " gives task to "
-               + employeeAID.getName());
+         // System.out.println(getName() + " gives task to "
+         // + employeeAID.getName());
          addBehaviour(new RobotsContractNetInitiator(myAgent, msg,
                countDeadline(clt)));
       }
@@ -225,33 +228,33 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       protected void handlePropose(ACLMessage propose, Vector v)
       {
-         System.out.println("Agent " + propose.getSender().getName()
-               + " proposed something to " + myAgent.getName());
+         // System.out.println("Agent " + propose.getSender().getName()
+         // + " proposed something to " + myAgent.getName());
          try
          {
             ContentElement content = getContentManager()
                   .extractContent(propose);
             MessageInfo info = (MessageInfo) content;
             int deadline = info.getDeadline();
-            System.out.println("proposed deadline: " + deadline);
-            System.out.println("my deadline: " + myDeadline);
+            // System.out.println("proposed deadline: " + deadline);
+            // System.out.println("my deadline: " + myDeadline);
             if (deadline < myDeadline + 100)
             {
                ACLMessage reply = propose.createReply();
                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                v.addElement(reply);
-               System.out.println(myAgent.getName()
-                     + " accepted proposition of "
-                     + propose.getSender().getName());
+               // System.out.println(myAgent.getName()
+               // + " accepted proposition of "
+               // + propose.getSender().getName());
             }
             else
             {
                ACLMessage reply = propose.createReply();
                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                v.addElement(reply);
-               System.out.println(myAgent.getName()
-                     + " rejected proposition of "
-                     + propose.getSender().getName());
+               // System.out.println(myAgent.getName()
+               // + " rejected proposition of "
+               // + propose.getSender().getName());
             }
          }
          catch (Exception ex)
@@ -272,6 +275,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       protected ACLMessage handleCfp(ACLMessage cfp)
       {
+         removeBehaviour(randomMove);
          ACLMessage reply = cfp.createReply();
          reply.setPerformative(ACLMessage.PROPOSE);
          int deadline;
@@ -297,8 +301,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             ex.printStackTrace();
          }
-         System.out.println(myAgent.getName() + " received job proposal from "
-               + cfp.getSender().getName());
+         // System.out.println(myAgent.getName() + " received job proposal from
+         // "
+         // + cfp.getSender().getName());
          return reply;
       }
 
@@ -306,24 +311,23 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
             ACLMessage propose, ACLMessage accept) throws FailureException
       {
          ACLMessage result = accept.createReply();
-         result.setPerformative(ACLMessage.PROPAGATE);
          try
          {
             MessageInfo mi = new MessageInfo();
             if (taskMI.getLt() != null)
             {
                LocateTask lt = taskMI.getLt();
-               // execute LocateTask
-               mi.setF(new Fact(id, xPos, yPos, new Date()));
+               tasks.add(lt);
+               addBehaviour(randomMove);
             }
             else
             {
                CheckLocationTask clt = taskMI.getClt();
-               // execute CheckLocationTask
-               mi.setF(new Fact(id, xPos, yPos, new Date()));
+               tasks.add(clt);
+               addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
             }
-            System.out.println(myAgent.getName() + " did the job for "
-                  + accept.getSender().getName());
+            // System.out.println(myAgent.getName() + " works for "
+            // + accept.getSender().getName());
             getContentManager().fillContent(result, mi);
          }
          catch (Exception ex)
@@ -334,9 +338,15 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          return result;
       }
 
+      protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose,
+            ACLMessage reject)
+      {
+         addBehaviour(randomMove);
+      }
+
    }
 
-   protected class SimpleBehav extends CyclicBehaviour
+   protected class ListenBehav extends CyclicBehaviour
    {
       MessageTemplate mTempl = MessageTemplate.and(mt, MessageTemplate.or(
             MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE),
@@ -364,6 +374,46 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                   if (facts.size() > 100)
                      facts.remove(0);
 
+                  if (tasks.peek() != null)
+                  {
+                     Task currentTask = tasks.element();
+                     if (currentTask instanceof LocateTask)
+                     {
+                        if (((LocateTask) currentTask).getObjectId() == fact
+                              .getId())
+                        {
+                           System.out.println("Task completed!");
+                           System.out.println("Object " + fact.getId()
+                                 + " is in (" + fact.getPosX() + ","
+                                 + fact.getPosY() + ")");
+                           tasks.remove();
+                        }
+                     }
+                     else
+                     {
+                        if (((CheckLocationTask) currentTask).getPosX() == fact
+                              .getPosX()
+                              && ((CheckLocationTask) currentTask).getPosY() == fact
+                                    .getPosY())
+                        {
+                           System.out.println("Task completed!");
+                           System.out.println("in (" + fact.getPosX() + ","
+                                 + fact.getPosY() + ") is object "
+                                 + fact.getId());
+                           tasks.remove();
+                           // addBehaviour(randomMove);
+                        }
+                        /*
+                         * else if (((CheckLocationTask) currentTask).getPosX() ==
+                         * xPos && ((CheckLocationTask) currentTask).getPosY() ==
+                         * yPos) { System.out.println("Task completed!");
+                         * System.out.println("there is nothing in (" +
+                         * fact.getPosX() + "," + fact.getPosY() + ")");
+                         * tasks.remove(); removeBehaviour(moveTo);
+                         * addBehaviour(randomMove); }
+                         */
+                     }
+                  }
                }
                catch (Exception ex)
                {
@@ -371,15 +421,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                }
             }
          }
-         else if (!inMove)
-         {
-            double x = (Math.random() * 500);
-            double y = (Math.random() * 500);
-            addBehaviour(new MoveBehav((int) x, (int) y));
-         }
          else
          {
-            // block();
+            block();
          }
       }
    }
@@ -471,6 +515,19 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
    }
 
+   protected class RandomMoveBehav extends CyclicBehaviour
+   {
+      public void action()
+      {
+         if (!inMove)
+         {
+            double x = (Math.random() * 500);
+            double y = (Math.random() * 500);
+            addBehaviour(new MoveBehav((int) x, (int) y));
+         }
+      }
+   }
+
    protected class MoveBehav extends OneShotBehaviour
    {
       protected int xBeg, xDest, yBeg, yDest;
@@ -528,7 +585,13 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          yPos = Integer.parseInt((String) args[2]);
       }
 
-      tasks = new ArrayList<Task>();
+      tasks = new PriorityQueue<Task>(10, new Comparator<Task>()
+      {
+         public int compare(Task i, Task j)
+         {
+            return i.getPriority() - j.getPriority();
+         }
+      });
       facts = new ArrayList<Fact>();
       conversations = new ArrayList<String>();
       inMove = false;
@@ -557,11 +620,16 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
 
       addBehaviour(new EnvRequestBehav());
-//       addBehaviour(new RobotsContractNetResponder(this, MessageTemplate
-//       .MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET)));
-       addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
-            10, 0));
-      addBehaviour(new SimpleBehav());
+      addBehaviour(new RobotsContractNetResponder(
+            this,
+            ContractNetResponder
+                  .createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET)));
+      // addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
+      // 6, 0));
+       addBehaviour(new GiveCheckLocationTaskBehav(
+       new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
+      addBehaviour(new ListenBehav());
+      addBehaviour(randomMove);
    }
 
    protected void takeDown()
