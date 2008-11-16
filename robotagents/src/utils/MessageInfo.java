@@ -9,6 +9,7 @@ public class MessageInfo implements Predicate
    protected int senderPosX;
    protected int senderPosY;
    protected float senderRange;
+   protected int deadline;
    protected Fact f = null;
    protected LocateTask lt = null;
    protected CheckLocationTask clt = null;
@@ -106,6 +107,16 @@ public class MessageInfo implements Predicate
    public void setClt(CheckLocationTask clt)
    {
       this.clt = clt;
+   }
+
+   public int getDeadline()
+   {
+      return deadline;
+   }
+
+   public void setDeadline(int deadline)
+   {
+      this.deadline = deadline;
    }
 
 }

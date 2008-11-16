@@ -1,8 +1,8 @@
 package utils;
 
-import jade.content.AgentAction;
+import jade.content.Concept;
 
-public class Task implements AgentAction
+public class Task implements Concept
 {
    protected int employerId, priority;
 
