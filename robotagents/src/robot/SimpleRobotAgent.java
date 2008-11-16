@@ -36,8 +36,6 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
    protected ArrayList<Fact> facts;
    protected ArrayList<String> conversations;
 
-   protected RandomMoveBehav randomMove = new RandomMoveBehav();
-
    protected Codec codec = new LEAPCodec();
    protected Ontology ontology = RobotsOntology.getInstance();
    protected MessageTemplate mt = MessageTemplate.and(MessageTemplate
@@ -275,7 +273,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       protected ACLMessage handleCfp(ACLMessage cfp)
       {
-         removeBehaviour(randomMove);
+
          ACLMessage reply = cfp.createReply();
          reply.setPerformative(ACLMessage.PROPOSE);
          int deadline;
@@ -318,13 +316,12 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
             {
                LocateTask lt = taskMI.getLt();
                tasks.add(lt);
-               addBehaviour(randomMove);
             }
             else
             {
                CheckLocationTask clt = taskMI.getClt();
                tasks.add(clt);
-               addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
+              // addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
             }
             // System.out.println(myAgent.getName() + " works for "
             // + accept.getSender().getName());
@@ -341,7 +338,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose,
             ACLMessage reject)
       {
-         addBehaviour(randomMove);
+         // addBehaviour(randomMove);
       }
 
    }
@@ -421,9 +418,35 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                }
             }
          }
+         else if (!inMove)
+         {
+            double x, y;
+            if (tasks.peek() != null)
+            {
+               Task currentTask = tasks.element();
+               if (currentTask instanceof CheckLocationTask)
+               {
+                  x = ((CheckLocationTask) currentTask).getPosX();
+                  y = ((CheckLocationTask) currentTask).getPosY();
+               }
+               else
+               {
+                  x = (Math.random() * 500);
+                  y = (Math.random() * 500);
+
+               }
+            }
+            else
+            {
+               x = (Math.random() * 500);
+               y = (Math.random() * 500);
+
+            }
+            addBehaviour(new MoveBehav((int) x, (int) y));
+         }
          else
          {
-            block();
+            // block();
          }
       }
    }
@@ -515,19 +538,6 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
    }
 
-   protected class RandomMoveBehav extends CyclicBehaviour
-   {
-      public void action()
-      {
-         if (!inMove)
-         {
-            double x = (Math.random() * 500);
-            double y = (Math.random() * 500);
-            addBehaviour(new MoveBehav((int) x, (int) y));
-         }
-      }
-   }
-
    protected class MoveBehav extends OneShotBehaviour
    {
       protected int xBeg, xDest, yBeg, yDest;
@@ -549,7 +559,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          // System.out.println("Started moving to " + xDest + " " + yDest);
          x = xBeg;
          y = yBeg;
-         TickerBehaviour loop = new TickerBehaviour(myAgent, 100)
+         TickerBehaviour loop = new TickerBehaviour(myAgent, 300)
          {
             public void onTick()
             {
@@ -626,10 +636,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                   .createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET)));
       // addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
       // 6, 0));
-       addBehaviour(new GiveCheckLocationTaskBehav(
-       new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
+      addBehaviour(new GiveCheckLocationTaskBehav(
+           new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
       addBehaviour(new ListenBehav());
-      addBehaviour(randomMove);
    }
 
    protected void takeDown()
