@@ -22,6 +22,9 @@ import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Vector;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+
 import utils.*;
 import ontologies.*;
 
@@ -158,8 +161,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             oe.printStackTrace();
          }
-         // System.out.println(getName() + " gives task to "
-         // + employeeAID.getName());
+         System.out.println(getName() + " gives LOCATE task to "
+               + employeeAID.getName());
          addBehaviour(new RobotsContractNetInitiator(myAgent, msg,
                countDeadline(lt)));
       }
@@ -207,8 +210,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             oe.printStackTrace();
          }
-         // System.out.println(getName() + " gives task to "
-         // + employeeAID.getName());
+         System.out.println(getName() + " gives CHECK LOCATION task to "
+               + employeeAID.getName());
          addBehaviour(new RobotsContractNetInitiator(myAgent, msg,
                countDeadline(clt)));
       }
@@ -226,33 +229,33 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       protected void handlePropose(ACLMessage propose, Vector v)
       {
-         // System.out.println("Agent " + propose.getSender().getName()
-         // + " proposed something to " + myAgent.getName());
+         System.out.println("Agent " + propose.getSender().getName()
+               + " proposed something to " + myAgent.getName());
          try
          {
             ContentElement content = getContentManager()
                   .extractContent(propose);
             MessageInfo info = (MessageInfo) content;
             int deadline = info.getDeadline();
-            // System.out.println("proposed deadline: " + deadline);
-            // System.out.println("my deadline: " + myDeadline);
+            System.out.println("proposed deadline: " + deadline);
+            System.out.println("my deadline: " + myDeadline);
             if (deadline < myDeadline + 100)
             {
                ACLMessage reply = propose.createReply();
                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                v.addElement(reply);
-               // System.out.println(myAgent.getName()
-               // + " accepted proposition of "
-               // + propose.getSender().getName());
+               System.out.println(myAgent.getName()
+                     + " accepted proposition of "
+                     + propose.getSender().getName());
             }
             else
             {
                ACLMessage reply = propose.createReply();
-               reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+               reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
                v.addElement(reply);
-               // System.out.println(myAgent.getName()
-               // + " rejected proposition of "
-               // + propose.getSender().getName());
+               System.out.println(myAgent.getName()
+                     + " rejected proposition of "
+                     + propose.getSender().getName());
             }
          }
          catch (Exception ex)
@@ -299,9 +302,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          {
             ex.printStackTrace();
          }
-         // System.out.println(myAgent.getName() + " received job proposal from
-         // "
-         // + cfp.getSender().getName());
+         System.out.println(myAgent.getName() + " received job proposal from "
+               + cfp.getSender().getName());
          return reply;
       }
 
@@ -321,10 +323,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
             {
                CheckLocationTask clt = taskMI.getClt();
                tasks.add(clt);
-              // addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
+               // addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
             }
-            // System.out.println(myAgent.getName() + " works for "
-            // + accept.getSender().getName());
+             System.out.println(myAgent.getName() + " works for "
+             + accept.getSender().getName());
             getContentManager().fillContent(result, mi);
          }
          catch (Exception ex)
@@ -333,12 +335,6 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          }
 
          return result;
-      }
-
-      protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose,
-            ACLMessage reject)
-      {
-         // addBehaviour(randomMove);
       }
 
    }
@@ -379,10 +375,26 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                         if (((LocateTask) currentTask).getObjectId() == fact
                               .getId())
                         {
+                           FoundIt raport = new FoundIt("Object " + fact.getId()
+                                 + " is in (" + fact.getPosX() + ","
+                                 + fact.getPosY() + ")");
+                           raport.show();
+
                            System.out.println("Task completed!");
                            System.out.println("Object " + fact.getId()
                                  + " is in (" + fact.getPosX() + ","
                                  + fact.getPosY() + ")");
+
+                           ACLMessage message = new ACLMessage(
+                                 ACLMessage.PROPAGATE);
+                           message.setLanguage(codec.getName());
+                           message.setOntology(ontology.getName());
+                           MessageInfo mi = new MessageInfo(id, currentTask
+                                 .getEmployerId(), xPos, yPos, (float) 1000.0);
+                           mi.setTaskCompletion(1);
+                           getContentManager().fillContent(message, mi);
+                           send(message);
+
                            tasks.remove();
                         }
                      }
@@ -393,10 +405,26 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                               && ((CheckLocationTask) currentTask).getPosY() == fact
                                     .getPosY())
                         {
-                           System.out.println("Task completed!");
-                           System.out.println("in (" + fact.getPosX() + ","
+                           FoundIt raport = new FoundIt("In (" + fact.getPosX() + ","
                                  + fact.getPosY() + ") is object "
                                  + fact.getId());
+                           raport.show();
+
+                           System.out.println("Task completed!");
+                           System.out.println("In (" + fact.getPosX() + ","
+                                 + fact.getPosY() + ") is object "
+                                 + fact.getId());
+
+                           ACLMessage message = new ACLMessage(
+                                 ACLMessage.PROPAGATE);
+                           message.setLanguage(codec.getName());
+                           message.setOntology(ontology.getName());
+                           MessageInfo mi = new MessageInfo(id, currentTask
+                                 .getEmployerId(), xPos, yPos, (float) 1000.0);
+                           mi.setTaskCompletion(1);
+                           getContentManager().fillContent(message, mi);
+                           send(message);
+
                            tasks.remove();
                            // addBehaviour(randomMove);
                         }
@@ -433,14 +461,12 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                {
                   x = (Math.random() * 500);
                   y = (Math.random() * 500);
-
                }
             }
             else
             {
                x = (Math.random() * 500);
                y = (Math.random() * 500);
-
             }
             addBehaviour(new MoveBehav((int) x, (int) y));
          }
@@ -454,25 +480,19 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
    protected class PropBehav extends OneShotBehaviour
    {
       ACLMessage message;
+      MessageInfo mi;
 
       public PropBehav(ACLMessage msg)
       {
          message = new ACLMessage(ACLMessage.PROPAGATE);
-         message.setConversationId(msg.getConversationId());
          message.setLanguage(codec.getName());
          message.setOntology(ontology.getName());
+         message.setConversationId(msg.getConversationId());
          try
          {
             ContentElement ce = getContentManager().extractContent(msg);
+            mi = (MessageInfo) ce;
             getContentManager().fillContent(message, ce);
-         }
-         catch (CodecException ce)
-         {
-            ce.printStackTrace();
-         }
-         catch (OntologyException oe)
-         {
-            oe.printStackTrace();
          }
          catch (Exception fe)
          {
@@ -483,57 +503,71 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       public void action()
       {
-         // System.out.println("***" +
-         // propagated(message.getConversationId()));
+         // System.out.println("***" + propagated(message.getConversationId()));
          // list();
          if (!propagated(message.getConversationId()))
          {
-            // System.out.println("costam dalej robie");
-            DFAgentDescription dfd = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType("ROBOT");
-            dfd.addServices(sd);
-
-            ArrayList<AID> aids = new ArrayList<AID>();
-
-            try
+            if (mi.getMainReceiverId() == id)
             {
-               DFAgentDescription[] result = DFService.search(myAgent, dfd);
-               // System.out.println("### " + result.length + " ###");
-               if (result.length > 0)
-                  for (int i = 0; i < result.length; i++)
-                  {
-                     // System.out.println("myAgent.getAID: " +
-                     // myAgent.getAID()
-                     // +
-                     // "result[i]: " + result[i].getName() );
-                     if (!myAgent.getAID().equals(result[i].getName()))
+               /*
+                * if (mi.getTaskCompletion() == 1) { Task currentTask; if
+                * (mi.getLt() != null) currentTask = mi.getLt(); else
+                * currentTask = mi.getClt(); if (tasks.contains(currentTask)) {
+                * tasks.remove(currentTask); MessageInfo info = new
+                * MessageInfo(id, mi .getMainSenderId(), xPos, yPos, (float)
+                * 1000.0); info.setAcomplishment(1); try {
+                * getContentManager().fillContent(message, info); send(message); }
+                * catch (CodecException ce) { ce.printStackTrace(); } catch
+                * (OntologyException oe) { oe.printStackTrace(); } } }
+                */
+            }
+            else
+            {
+               DFAgentDescription dfd = new DFAgentDescription();
+               ServiceDescription sd = new ServiceDescription();
+               sd.setType("ROBOT");
+               dfd.addServices(sd);
+
+               ArrayList<AID> aids = new ArrayList<AID>();
+
+               try
+               {
+                  DFAgentDescription[] result = DFService.search(myAgent, dfd);
+                  // System.out.println("### " + result.length + " ###");
+                  if (result.length > 0)
+                     for (int i = 0; i < result.length; i++)
                      {
-                        aids.add(result[i].getName());
-                        // System.out.println("DORZUCAM!!!");
+                        // System.out.println("myAgent.getAID: " +
+                        // myAgent.getAID()
+                        // +
+                        // "result[i]: " + result[i].getName() );
+                        if (!myAgent.getAID().equals(result[i].getName()))
+                        {
+                           aids.add(result[i].getName());
+                           // System.out.println("DORZUCAM!!!");
+                        }
                      }
-                  }
 
+               }
+               catch (FIPAException e)
+               {
+                  e.printStackTrace();
+               }
+               catch (Exception fe)
+               {
+                  fe.printStackTrace();
+               }
+
+               for (int i = 0; i < aids.size(); i++)
+               {
+                  message.addReceiver(aids.get(i));
+                  // System.out.println(aids.get(i));
+               }
+
+               addConvId(message.getConversationId());
+
+               send(message);
             }
-            catch (FIPAException e)
-            {
-               e.printStackTrace();
-            }
-            catch (Exception fe)
-            {
-               fe.printStackTrace();
-            }
-
-            for (int i = 0; i < aids.size(); i++)
-            {
-               message.addReceiver(aids.get(i));
-               // System.out.println(aids.get(i));
-            }
-
-            addConvId(message.getConversationId());
-
-            send(message);
-
          }
       }
    }
@@ -559,7 +593,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          // System.out.println("Started moving to " + xDest + " " + yDest);
          x = xBeg;
          y = yBeg;
-         TickerBehaviour loop = new TickerBehaviour(myAgent, 300)
+         TickerBehaviour loop = new TickerBehaviour(myAgent, 150)
          {
             public void onTick()
             {
@@ -634,10 +668,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
             this,
             ContractNetResponder
                   .createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET)));
-      // addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
-      // 6, 0));
-      addBehaviour(new GiveCheckLocationTaskBehav(
-           new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
+//       addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
+//       6, 0));
+//      addBehaviour(new GiveCheckLocationTaskBehav(
+//            new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
       addBehaviour(new ListenBehav());
    }
 

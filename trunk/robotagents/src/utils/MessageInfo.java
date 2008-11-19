@@ -10,6 +10,8 @@ public class MessageInfo implements Predicate
    protected int senderPosY;
    protected float senderRange;
    protected int deadline;
+   protected int taskCompletion;
+   protected int acomplishment;
    protected Fact f = null;
    protected LocateTask lt = null;
    protected CheckLocationTask clt = null;
@@ -117,6 +119,26 @@ public class MessageInfo implements Predicate
    public void setDeadline(int deadline)
    {
       this.deadline = deadline;
+   }
+
+   public int getTaskCompletion()
+   {
+      return taskCompletion;
+   }
+
+   public void setTaskCompletion(int taskCompletion)
+   {
+      this.taskCompletion = taskCompletion;
+   }
+
+   public int getAcomplishment()
+   {
+      return acomplishment;
+   }
+
+   public void setAcomplishment(int acomplishment)
+   {
+      this.acomplishment = acomplishment;
    }
 
 }
