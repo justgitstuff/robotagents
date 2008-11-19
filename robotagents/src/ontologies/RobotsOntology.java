@@ -84,6 +84,12 @@ public class RobotsOntology extends Ontology implements RobotsVocabulary
          mf.add(MESSAGE_INFO_DEADLINE,
                (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
                ObjectSchema.OPTIONAL);
+         mf.add(MESSAGE_INFO_TASKCOMPLETION,
+               (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
+               ObjectSchema.OPTIONAL);
+         mf.add(MESSAGE_INFO_ACOMPLISHMENT,
+               (PrimitiveSchema) getSchema(BasicOntology.INTEGER),
+               ObjectSchema.OPTIONAL);
          mf.add(MESSAGE_INFO_FACT, (ConceptSchema) getSchema(FACT),
                ObjectSchema.OPTIONAL);
          mf.add(MESSAGE_INFO_LOCATE_TASK,
