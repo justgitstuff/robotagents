@@ -69,8 +69,13 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
    public void list()
    {
-      for (int i = 0; i < this.conversations.size(); i++)
-         System.out.println(" - " + i + " " + this.conversations.get(i));
+      System.out.println("**********************************");
+      System.out.println("Agent's " + id + "knowledge base:");
+      for (Fact fact : facts)
+         System.out.println("- object id: " + fact.getId() + " X pos: "
+               + fact.getPosX() + " Y pos: " + fact.getPosY() + " time: "
+               + fact.getTime());
+      System.out.println("**********************************");
    }
 
    protected class EnvRequestBehav extends OneShotBehaviour
@@ -325,8 +330,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                tasks.add(clt);
                // addBehaviour(new MoveBehav(clt.getPosX(), clt.getPosY()));
             }
-             System.out.println(myAgent.getName() + " works for "
-             + accept.getSender().getName());
+            System.out.println(myAgent.getName() + " works for "
+                  + accept.getSender().getName());
             getContentManager().fillContent(result, mi);
          }
          catch (Exception ex)
@@ -363,10 +368,24 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                   MessageInfo info = (MessageInfo) content;
                   Fact fact = info.getF();
 
-                  facts.add(fact);
-                  if (facts.size() > 100)
-                     facts.remove(0);
+                  if (fact.getId() != id)
+                  {
+                     ArrayList<Fact> toRemove = new ArrayList<Fact>();
+                     for (Fact newFact : facts)
+                        if (fact.getId() == newFact.getId()
+                              && fact.getTime().after(newFact.getTime()))
+                           toRemove.add(newFact);
 
+                     for (Fact newFact : toRemove)
+                        facts.remove(newFact);
+
+                     facts.add(fact);
+                     if (facts.size() > 100)
+                        facts.remove(0);
+
+                     list();
+
+                  }
                   if (tasks.peek() != null)
                   {
                      Task currentTask = tasks.element();
@@ -375,9 +394,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                         if (((LocateTask) currentTask).getObjectId() == fact
                               .getId())
                         {
-                           FoundIt raport = new FoundIt("Object " + fact.getId()
-                                 + " is in (" + fact.getPosX() + ","
-                                 + fact.getPosY() + ")");
+                           FoundIt raport = new FoundIt("Object "
+                                 + fact.getId() + " is in (" + fact.getPosX()
+                                 + "," + fact.getPosY() + ")");
                            raport.show();
 
                            System.out.println("Task completed!");
@@ -397,6 +416,21 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
                            tasks.remove();
                         }
+                        else
+                        {
+                           for (Fact newFact : facts)
+                           {
+                              if (newFact.getId() == ((LocateTask) currentTask)
+                                    .getObjectId())
+                              {
+                                 tasks.add(new CheckLocationTask(id,
+                                       currentTask.getPriority() - 1, newFact
+                                             .getPosX(), newFact.getPosY()));
+                                 break;
+                              }
+
+                           }
+                        }
                      }
                      else
                      {
@@ -405,8 +439,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                               && ((CheckLocationTask) currentTask).getPosY() == fact
                                     .getPosY())
                         {
-                           FoundIt raport = new FoundIt("In (" + fact.getPosX() + ","
-                                 + fact.getPosY() + ") is object "
+                           FoundIt raport = new FoundIt("In (" + fact.getPosX()
+                                 + "," + fact.getPosY() + ") is object "
                                  + fact.getId());
                            raport.show();
 
@@ -440,6 +474,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                      }
                   }
                }
+
                catch (Exception ex)
                {
                   ex.printStackTrace();
@@ -454,8 +489,23 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                Task currentTask = tasks.element();
                if (currentTask instanceof CheckLocationTask)
                {
+
                   x = ((CheckLocationTask) currentTask).getPosX();
                   y = ((CheckLocationTask) currentTask).getPosY();
+                /*  if((xPos - x)*(xPos - x) + (yPos - y)*(yPos - y) < 400)
+                  {
+                     FoundIt raport = new FoundIt("There is nothing in (" + x
+                           + "," + y + ").");
+                     raport.show();
+
+                     System.out.println("Task completed!");
+                     System.out.println("There is nothing in (" + x + ","
+                           + y + ").");
+                     tasks.remove();
+
+                     x = (Math.random() * 500);
+                     y = (Math.random() * 500);
+                  }*/
                }
                else
                {
@@ -668,10 +718,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
             this,
             ContractNetResponder
                   .createMessageTemplate(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET)));
-//       addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
-//       6, 0));
-//      addBehaviour(new GiveCheckLocationTaskBehav(
-//            new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
+      // addBehaviour(new GiveLocateTaskBehav(new AID("A2", AID.ISLOCALNAME), 2,
+      // 6, 0));
+      // addBehaviour(new GiveCheckLocationTaskBehav(
+      // new AID("A2", AID.ISLOCALNAME), 2, 50, 50, 0));
       addBehaviour(new ListenBehav());
    }
 

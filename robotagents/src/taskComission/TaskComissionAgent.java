@@ -101,7 +101,7 @@ public class TaskComissionAgent extends SimpleRobotAgent
                if (agID != null && obID != null)
                {
                   addBehaviour(new GiveLocateTaskBehav(new AID(agID.toString(),
-                        AID.ISLOCALNAME), agID, obID, 0));
+                        AID.ISLOCALNAME), agID, obID, 4));
                   addTaskRaport("Given locate task to " + agID);
                }
             }

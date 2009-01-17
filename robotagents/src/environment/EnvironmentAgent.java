@@ -26,7 +26,7 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
    protected ArrayList<EnvObject> robots = new ArrayList<EnvObject>();
    protected Codec codec = new LEAPCodec();
    protected Ontology ontology = RobotsOntology.getInstance();
-   protected int sightRange = 10;
+   protected int sightRange = 20;
    protected MessageTemplate mt = MessageTemplate.and(MessageTemplate
          .MatchLanguage(codec.getName()), MessageTemplate
          .MatchOntology(ontology.getName()));
