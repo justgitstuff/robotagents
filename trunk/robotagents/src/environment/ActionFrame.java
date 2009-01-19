@@ -17,6 +17,7 @@ import javax.swing.border.Border;
 import javax.swing.text.*;
 
 import utils.EnvObject;
+import utils.Globals;
 
 /**
  * Class containing all GUI Elements
@@ -238,12 +239,16 @@ public class ActionFrame extends JFrame
             int centX = object.getPosX();
             int centY = object.getPosY();
 
+            int range = (int) Globals.RANGE;
+            int srange = (int) (Globals.SIGHT_RANGE);
+
+
             Rectangle2D rect = new Rectangle2D.Double(centX - PWIDTH / 2, centY
                   - PHIGHT / 2, PWIDTH, PHIGHT); // preparing agent symbol
-            Ellipse2D circle = new Ellipse2D.Double(centX - 20 * PWIDTH / 2,
-                  centY - 20 * PHIGHT / 2, 20 * PWIDTH, 20 * PHIGHT);
-            Ellipse2D circle2 = new Ellipse2D.Double(centX - 50 * PWIDTH / 2,
-                  centY - 50 * PHIGHT / 2, 50 * PWIDTH, 50 * PHIGHT);// painting
+            Ellipse2D circle = new Ellipse2D.Double(centX - srange * PWIDTH / 2,
+                  centY - srange * PHIGHT / 2, srange * PWIDTH, srange * PHIGHT);
+            Ellipse2D circle2 = new Ellipse2D.Double(centX - range * PWIDTH / 2,
+                  centY - range * PHIGHT / 2, range * PWIDTH, range * PHIGHT);// painting
             // signal
             // coverage
             g2.setPaint(Color.BLUE);
