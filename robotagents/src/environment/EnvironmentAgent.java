@@ -48,13 +48,13 @@ public class EnvironmentAgent extends Agent implements RobotsVocabulary
          for (int i = 0; i < objects.size(); i++)
             if ((objects.get(i).getPosX() - x) * (objects.get(i).getPosX() - x)
                   + (objects.get(i).getPosY() - y)
-                  * (objects.get(i).getPosY() - y) < sightRange * sightRange)
+                  * (objects.get(i).getPosY() - y) < Globals.SIGHT_RANGE * Globals.SIGHT_RANGE)
                neighborhood.add(objects.get(i));
 
          for (int i = 0; i < robots.size(); i++)
             if ((robots.get(i).getPosX() - x) * (robots.get(i).getPosX() - x)
                   + (robots.get(i).getPosY() - y)
-                  * (robots.get(i).getPosY() - y) < sightRange * sightRange)
+                  * (robots.get(i).getPosY() - y) < Globals.SIGHT_RANGE * Globals.SIGHT_RANGE)
                neighborhood.add(robots.get(i));
 
       }

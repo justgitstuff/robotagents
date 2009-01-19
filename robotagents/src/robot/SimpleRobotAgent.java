@@ -370,6 +370,22 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
                   if (fact.getId() != id)
                   {
+                     if (fact.getId() < 100)
+                     {
+                        for (Fact newFact : facts)
+                        {
+                           if (fact.getId() == newFact.getId())
+                           {
+                              if (newFact.getTime().getTime()
+                                    - fact.getTime().getTime() < 5000)
+                              {
+                                 addBehaviour(new SendAllIKnowBehav(fact
+                                       .getId()));
+                              }
+                           }
+                        }
+                     }
+
                      ArrayList<Fact> toRemove = new ArrayList<Fact>();
                      for (Fact newFact : facts)
                         if (fact.getId() == newFact.getId()
@@ -409,7 +425,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                            message.setLanguage(codec.getName());
                            message.setOntology(ontology.getName());
                            MessageInfo mi = new MessageInfo(id, currentTask
-                                 .getEmployerId(), xPos, yPos, (float) 1000.0);
+                                 .getEmployerId(), xPos, yPos, Globals.RANGE);
                            mi.setTaskCompletion(1);
                            getContentManager().fillContent(message, mi);
                            send(message);
@@ -423,9 +439,44 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                               if (newFact.getId() == ((LocateTask) currentTask)
                                     .getObjectId())
                               {
-                                 tasks.add(new CheckLocationTask(id,
-                                       currentTask.getPriority() - 1, newFact
-                                             .getPosX(), newFact.getPosY()));
+                                 Date now = new Date();
+                                 if (now.getTime()
+                                       - newFact.getTime().getTime() < 10000)
+                                 {
+                                    FoundIt raport = new FoundIt("Object "
+                                          + newFact.getId() + " is in ("
+                                          + newFact.getPosX() + ","
+                                          + newFact.getPosY() + ")");
+                                    raport.show();
+
+                                    System.out.println("Task completed!");
+                                    System.out.println("Object "
+                                          + newFact.getId() + " is in ("
+                                          + newFact.getPosX() + ","
+                                          + newFact.getPosY() + ")");
+
+                                    ACLMessage message = new ACLMessage(
+                                          ACLMessage.PROPAGATE);
+                                    message.setLanguage(codec.getName());
+                                    message.setOntology(ontology.getName());
+                                    MessageInfo mi = new MessageInfo(id,
+                                          currentTask.getEmployerId(), xPos,
+                                          yPos, Globals.RANGE);
+                                    mi.setTaskCompletion(1);
+                                    getContentManager()
+                                          .fillContent(message, mi);
+                                    send(message);
+
+                                    tasks.remove();
+                                 }
+                                 else
+                                 {
+                                    tasks
+                                          .add(new CheckLocationTask(id,
+                                                currentTask.getPriority() - 1,
+                                                newFact.getPosX(), newFact
+                                                      .getPosY()));
+                                 }
                                  break;
                               }
 
@@ -454,7 +505,7 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                            message.setLanguage(codec.getName());
                            message.setOntology(ontology.getName());
                            MessageInfo mi = new MessageInfo(id, currentTask
-                                 .getEmployerId(), xPos, yPos, (float) 1000.0);
+                                 .getEmployerId(), xPos, yPos, Globals.RANGE);
                            mi.setTaskCompletion(1);
                            getContentManager().fillContent(message, mi);
                            send(message);
@@ -492,20 +543,22 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
                   x = ((CheckLocationTask) currentTask).getPosX();
                   y = ((CheckLocationTask) currentTask).getPosY();
-                /*  if((xPos - x)*(xPos - x) + (yPos - y)*(yPos - y) < 400)
+                  if ((xPos - x) * (xPos - x) + (yPos - y) * (yPos - y) < Globals.SIGHT_RANGE
+                        * Globals.SIGHT_RANGE)
                   {
-                     FoundIt raport = new FoundIt("There is nothing in (" + x
-                           + "," + y + ").");
-                     raport.show();
-
-                     System.out.println("Task completed!");
-                     System.out.println("There is nothing in (" + x + ","
-                           + y + ").");
+                     /*
+                      * FoundIt raport = new FoundIt("There is nothing in (" + x +
+                      * "," + y + ")."); raport.show();
+                      *
+                      * System.out.println("Task completed!");
+                      * System.out.println("There is nothing in (" + x + "," + y +
+                      * ").");
+                      */
                      tasks.remove();
 
                      x = (Math.random() * 500);
                      y = (Math.random() * 500);
-                  }*/
+                  }
                }
                else
                {
@@ -557,66 +610,128 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          // list();
          if (!propagated(message.getConversationId()))
          {
-            if (mi.getMainReceiverId() == id)
+            if ((mi.getSenderPosX() - xPos) * (mi.getSenderPosX() - xPos)
+                  + (mi.getSenderPosY() - yPos) * (mi.getSenderPosY() - yPos) < Globals.RANGE
+                  * Globals.RANGE)
             {
-               /*
-                * if (mi.getTaskCompletion() == 1) { Task currentTask; if
-                * (mi.getLt() != null) currentTask = mi.getLt(); else
-                * currentTask = mi.getClt(); if (tasks.contains(currentTask)) {
-                * tasks.remove(currentTask); MessageInfo info = new
-                * MessageInfo(id, mi .getMainSenderId(), xPos, yPos, (float)
-                * 1000.0); info.setAcomplishment(1); try {
-                * getContentManager().fillContent(message, info); send(message); }
-                * catch (CodecException ce) { ce.printStackTrace(); } catch
-                * (OntologyException oe) { oe.printStackTrace(); } } }
-                */
-            }
-            else
-            {
-               DFAgentDescription dfd = new DFAgentDescription();
-               ServiceDescription sd = new ServiceDescription();
-               sd.setType("ROBOT");
-               dfd.addServices(sd);
-
-               ArrayList<AID> aids = new ArrayList<AID>();
-
-               try
+               if (mi.getMainReceiverId() == id)
                {
-                  DFAgentDescription[] result = DFService.search(myAgent, dfd);
-                  // System.out.println("### " + result.length + " ###");
-                  if (result.length > 0)
-                     for (int i = 0; i < result.length; i++)
+
+                  if (mi.getTaskCompletion() == 1)
+                  {
+                     Fact fact = mi.getF();
+
+                     if (fact.getId() != id)
                      {
-                        // System.out.println("myAgent.getAID: " +
-                        // myAgent.getAID()
-                        // +
-                        // "result[i]: " + result[i].getName() );
-                        if (!myAgent.getAID().equals(result[i].getName()))
-                        {
-                           aids.add(result[i].getName());
-                           // System.out.println("DORZUCAM!!!");
-                        }
+                        ArrayList<Fact> toRemove = new ArrayList<Fact>();
+                        for (Fact newFact : facts)
+                           if (fact.getId() == newFact.getId()
+                                 && fact.getTime().after(newFact.getTime()))
+                              toRemove.add(newFact);
+
+                        for (Fact newFact : toRemove)
+                           facts.remove(newFact);
+
+                        facts.add(fact);
+                        if (facts.size() > 100)
+                           facts.remove(0);
+
+                        list();
+
                      }
 
-               }
-               catch (FIPAException e)
-               {
-                  e.printStackTrace();
-               }
-               catch (Exception fe)
-               {
-                  fe.printStackTrace();
-               }
+                     ACLMessage message = new ACLMessage(ACLMessage.PROPAGATE);
+                     message.setLanguage(codec.getName());
+                     message.setOntology(ontology.getName());
 
-               for (int i = 0; i < aids.size(); i++)
-               {
-                  message.addReceiver(aids.get(i));
-                  // System.out.println(aids.get(i));
+                     MessageInfo mes = new MessageInfo(id,
+                           mi.getMainSenderId(), xPos, yPos, Globals.RANGE);
+                     mes.setAcomplishment(1);
+                     try
+                     {
+                        getContentManager().fillContent(message, mes);
+                        send(message);
+                     }
+                     catch (Exception e)
+                     {
+                        e.printStackTrace();
+                     }
+
+                  }
+                  else if (mi.getAcomplishment() == 1)
+                     ;
+                  else
+                  {
+                     Fact fact = mi.getF();
+
+                     if (fact.getId() != id)
+                     {
+                        ArrayList<Fact> toRemove = new ArrayList<Fact>();
+                        for (Fact newFact : facts)
+                           if (fact.getId() == newFact.getId()
+                                 && fact.getTime().after(newFact.getTime()))
+                              toRemove.add(newFact);
+
+                        for (Fact newFact : toRemove)
+                           facts.remove(newFact);
+
+                        facts.add(fact);
+                        if (facts.size() > 100)
+                           facts.remove(0);
+
+                        list();
+                     }
+                  }
+
                }
+               else
+               {
+                  DFAgentDescription dfd = new DFAgentDescription();
+                  ServiceDescription sd = new ServiceDescription();
+                  sd.setType("ROBOT");
+                  dfd.addServices(sd);
 
-               addConvId(message.getConversationId());
+                  ArrayList<AID> aids = new ArrayList<AID>();
 
-               send(message);
+                  try
+                  {
+                     DFAgentDescription[] result = DFService.search(myAgent,
+                           dfd);
+                     // System.out.println("### " + result.length + " ###");
+                     if (result.length > 0)
+                        for (int i = 0; i < result.length; i++)
+                        {
+                           // System.out.println("myAgent.getAID: " +
+                           // myAgent.getAID()
+                           // +
+                           // "result[i]: " + result[i].getName() );
+                           if (!myAgent.getAID().equals(result[i].getName()))
+                           {
+                              aids.add(result[i].getName());
+                              // System.out.println("DORZUCAM!!!");
+                           }
+                        }
+
+                  }
+                  catch (FIPAException e)
+                  {
+                     e.printStackTrace();
+                  }
+                  catch (Exception fe)
+                  {
+                     fe.printStackTrace();
+                  }
+
+                  for (int i = 0; i < aids.size(); i++)
+                  {
+                     message.addReceiver(aids.get(i));
+                     // System.out.println(aids.get(i));
+                  }
+
+                  addConvId(message.getConversationId());
+
+                  send(message);
+               }
             }
          }
       }
@@ -665,6 +780,42 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
          };
          addBehaviour(loop);
+      }
+
+   }
+
+   protected class SendAllIKnowBehav extends OneShotBehaviour
+   {
+      private int receiverId;
+
+      public SendAllIKnowBehav(int id)
+      {
+         receiverId = id;
+      }
+
+      public void action()
+      {
+         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n " +
+         		"I'M SHARING WITH AGENT " + receiverId);
+         for (Fact fact : facts)
+         {
+            ACLMessage message = new ACLMessage(ACLMessage.PROPAGATE);
+            message.setLanguage(codec.getName());
+            message.setOntology(ontology.getName());
+
+            MessageInfo mi = new MessageInfo(id, receiverId, xPos, yPos,
+                  Globals.RANGE);
+            mi.setF(fact);
+            try
+            {
+               getContentManager().fillContent(message, mi);
+               send(message);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
       }
 
    }
