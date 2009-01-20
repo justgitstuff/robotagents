@@ -2,6 +2,7 @@ package taskComission;
 
 import robot.SimpleRobotAgent;
 import utils.Fact;
+import utils.Task;
 import jade.core.AID;
 
 import java.awt.BorderLayout;
@@ -10,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -219,6 +221,7 @@ public class TaskComissionAgent extends SimpleRobotAgent
    {
       facts = new ArrayList<Fact>();
       conversations = new ArrayList<String>();
+      tasks = new PriorityQueue<Task>();
       inMove = false;
       getContentManager().registerLanguage(codec);
       getContentManager().registerOntology(ontology);

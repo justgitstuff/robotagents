@@ -63,8 +63,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
    public int countDeadline(Task task)
    {
-      Random generator = new Random();
-      return generator.nextInt(100);
+      if (tasks.peek() != null) return 1;
+      return 0;
    }
 
    public void list()
@@ -242,9 +242,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                   .extractContent(propose);
             MessageInfo info = (MessageInfo) content;
             int deadline = info.getDeadline();
-            System.out.println("proposed deadline: " + deadline);
-            System.out.println("my deadline: " + myDeadline);
-            if (deadline < myDeadline + 100)
+            //System.out.println("proposed deadline: " + deadline);
+            //System.out.println("my deadline: " + myDeadline);
+            if (deadline == 0)
             {
                ACLMessage reply = propose.createReply();
                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
@@ -381,6 +381,32 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                               {
                                  addBehaviour(new SendAllIKnowBehav(fact
                                        .getId()));
+
+                                 if (tasks.peek() != null)
+                                 {
+                                    if (tasks.element() instanceof LocateTask)
+                                    {
+                                       LocateTask current = (LocateTask) tasks
+                                             .element();
+                                       addBehaviour(new GiveLocateTaskBehav(
+                                             new AID((new Integer(fact.getId())).toString(),
+                                                   AID.ISLOCALNAME), fact
+                                                   .getId(), current
+                                                   .getObjectId(), current
+                                                   .getPriority()));
+                                    }
+                                    else
+                                    {
+                                       CheckLocationTask current = (CheckLocationTask) tasks
+                                             .element();
+                                       addBehaviour(new GiveCheckLocationTaskBehav(
+                                             new AID((new Integer(fact.getId())).toString(),
+                                                   AID.ISLOCALNAME), fact
+                                                   .getId(), current.getPosX(),
+                                             current.getPosY(), current
+                                                   .getPriority()));
+                                    }
+                                 }
                               }
                            }
                         }
@@ -795,8 +821,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
 
       public void action()
       {
-         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n " +
-         		"I'M SHARING WITH AGENT " + receiverId);
+         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n "
+               + "I'M SHARING WITH AGENT " + receiverId);
          for (Fact fact : facts)
          {
             ACLMessage message = new ACLMessage(ACLMessage.PROPAGATE);
