@@ -19,8 +19,7 @@ public class PositionField extends JTextField
    private int maxPos;
    private int docSize;
    /**
-    * Creates 
-    * @param domwar domyœlna wartoœc, jezeli d³u¿sza ni¿ 4 czyfry to przycinana do 4 pierwszych
+    * @param domwar domyï¿½lna wartoï¿½c, jezeli dï¿½uï¿½sza niï¿½ 4 czyfry to przycinana do 4 pierwszych
     * @param rozmiar rozmiar pola tekstowego
     */
    public PositionField(int size, int max)
@@ -62,7 +61,7 @@ public class PositionField extends JTextField
 }
 
 /**
- * Dokument który moze przechowywa tylko 4 cyfrowe integery
+ * Dokument ktï¿½ry moze przechowywa tylko 4 cyfrowe integery
  * @author Maciej Kupczak
  */
 class PositionDoc extends PlainDocument
@@ -98,9 +97,9 @@ class PositionDoc extends PlainDocument
       }
    }
    /**
-    * sprawdza czy podany string jest liczb¹
-    * @param str sprawdzany ci¹g
-    * @return true jeœli jest liczba, false w przeciwnym wypadku
+    * sprawdza czy podany string jest liczbï¿½
+    * @param str sprawdzany ciï¿½g
+    * @return true jeï¿½li jest liczba, false w przeciwnym wypadku
     */
    static boolean poprawny(String str, int max)
    {

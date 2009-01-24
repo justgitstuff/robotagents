@@ -1,5 +1,8 @@
 package utils;
 
+/** Check what agent can see in fixed location
+ * 
+ */
 public class CheckLocationTask extends Task
 {
 	protected int posX, posY;

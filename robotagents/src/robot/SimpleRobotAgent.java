@@ -66,7 +66,9 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       if (tasks.peek() != null) return 1;
       return 0;
    }
-
+/**
+ * lists agents knowledge base
+ */
    public void list()
    {
       System.out.println("**********************************");
@@ -126,7 +128,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
          }
       }
    }
-
+/**
+ * Gives location data to the Environment agent
+ *
+ */
    protected class GiveLocateTaskBehav extends OneShotBehaviour
    {
       private AID employeeAID;
@@ -172,7 +177,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                countDeadline(lt)));
       }
    }
-
+/** Give someone a task to locate something
+ * 
+ * 
+ */
    protected class GiveCheckLocationTaskBehav extends OneShotBehaviour
    {
       private AID employeeAID;
@@ -221,7 +229,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
                countDeadline(clt)));
       }
    }
-
+/** FIPA ContractNet protocol Implementation
+ * 
+ * 
+ */
    protected class RobotsContractNetInitiator extends ContractNetInitiator
    {
       private int myDeadline;
@@ -343,7 +354,11 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
 
    }
-
+/**
+ * Some deep stuff to check if we see something (communicates with env)
+ * @author lisu
+ *
+ */
    protected class ListenBehav extends CyclicBehaviour
    {
       MessageTemplate mTempl = MessageTemplate.and(mt, MessageTemplate.or(
@@ -606,6 +621,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
    }
 
+  /** Propagate behaviour - to implement propagated messages
+   * 
+   * 
+   */
    protected class PropBehav extends OneShotBehaviour
    {
       ACLMessage message;
@@ -809,7 +828,10 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       }
 
    }
-
+/**
+ * Name tells everything
+ *
+ */
    protected class SendAllIKnowBehav extends OneShotBehaviour
    {
       private int receiverId;
@@ -822,7 +844,8 @@ public class SimpleRobotAgent extends Agent implements RobotsVocabulary
       public void action()
       {
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n "
-               + "I'M SHARING WITH AGENT " + receiverId);
+               + "I'M SHARING WITH AGENT " + receiverId); //so we can see
+         //what is happening on the console
          for (Fact fact : facts)
          {
             ACLMessage message = new ACLMessage(ACLMessage.PROPAGATE);

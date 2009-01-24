@@ -17,8 +17,7 @@ import javax.swing.text.PlainDocument;
 public class IDField extends JTextField
 {
    /**
-    * Creates 
-    * @param domwar domyœlna wartoœc, jezeli d³u¿sza ni¿ 4 czyfry to przycinana do 4 pierwszych
+    * @param domwar domyï¿½lna wartoï¿½c, jezeli dï¿½uï¿½sza niï¿½ 4 czyfry to przycinana do 4 pierwszych
     * @param rozmiar rozmiar pola tekstowego
     */
    public IDField(int size)
@@ -57,7 +56,7 @@ public class IDField extends JTextField
 }
 
 /**
- * Weryfikator, który sprawdza, czy zawartosc pola tekstowego jest poprawna liczb¹ ca³kowit¹
+ * verifies if value of the textfield  is proper integer value
  * @author Maciek
  *
  */
@@ -80,10 +79,6 @@ class WerLength extends InputVerifier
    }
 }
 
-/**
- * Dokument który moze przechowywa tylko 4 cyfrowe integery
- * @author Maciej Kupczak
- */
 class IdDoc extends PlainDocument
 {
    
@@ -107,11 +102,6 @@ class IdDoc extends PlainDocument
          }
       }
    }
-   /**
-    * sprawdza czy podany string jest liczb¹
-    * @param str sprawdzany ci¹g
-    * @return true jeœli jest liczba, false w przeciwnym wypadku
-    */
    static boolean poprawny(String str)
    {
       try

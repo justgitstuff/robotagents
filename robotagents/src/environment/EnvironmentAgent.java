@@ -19,7 +19,10 @@ import jade.core.behaviours.*;
 import jade.domain.*;
 import jade.domain.FIPAAgentManagement.*;
 import jade.lang.acl.*;
-
+/**
+ * Agent responsible for simulating Environment in which Agents act 
+ * 
+ */
 public class EnvironmentAgent extends Agent implements RobotsVocabulary
 {
    protected ArrayList<EnvObject> objects = new ArrayList<EnvObject>();
