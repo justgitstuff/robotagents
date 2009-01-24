@@ -27,7 +27,10 @@ import javax.swing.border.Border;
 
 import environment.IDField;
 import environment.PositionField;
-
+/** 
+ * Agent used to commiss tasks from user (task commission window)
+ *
+ */
 public class TaskComissionAgent extends SimpleRobotAgent
 {
 

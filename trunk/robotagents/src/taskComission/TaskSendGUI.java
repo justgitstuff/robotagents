@@ -22,7 +22,10 @@ import javax.swing.border.Border;
 
 import environment.IDField;
 import environment.PositionField;
-
+/**
+ * Window to use task commission Agent
+ *
+ */
 public class TaskSendGUI extends JFrame
 {
    private static final int WIDTH = 350;
