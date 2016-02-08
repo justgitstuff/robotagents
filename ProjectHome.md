@@ -1,0 +1,1 @@
+Academic project for simulation of communication and behaviours of robots in defined environment using agents technology. Written in Java for JADE platform.
